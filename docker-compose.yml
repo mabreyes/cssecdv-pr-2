@@ -22,7 +22,7 @@ services:
       timeout: 5s
       retries: 5
 
-  # Backend API
+  # Backend API - Starts after PostgreSQL is healthy
   backend:
     build:
       context: ./backend
@@ -54,7 +54,7 @@ services:
       retries: 3
       start_period: 40s
 
-  # Frontend Application
+  # Frontend Application - Starts after Backend is healthy
   frontend:
     build:
       context: .
@@ -88,7 +88,8 @@ services:
     ports:
       - "8080:80"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     networks:
       - auth_network
     volumes:

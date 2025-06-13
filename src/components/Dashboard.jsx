@@ -232,13 +232,6 @@ const Dashboard = () => {
 
       <footer className="dashboard-footer">
         <div className="footer-content">
-          <p>
-            <strong>Security Notice:</strong> This is a demonstration of secure
-            authentication principles. Your data is protected using
-            industry-standard security practices including password hashing, JWT
-            tokens, input validation, and protection against common web
-            vulnerabilities.
-          </p>
           <div className="tech-stack">
             <small>
               Tech Stack: React + Vite • Node.js + Express • SQLite • bcrypt •
