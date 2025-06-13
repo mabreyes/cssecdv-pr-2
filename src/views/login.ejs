@@ -1,0 +1,53 @@
+<%- include('layout', { title: 'Login' }) %>
+
+<h1>Login</h1>
+
+<form action="/login" method="POST" autocomplete="off">
+    <div>
+        <label for="identifier">Username or Email:</label>
+        <input 
+            type="text" 
+            id="identifier" 
+            name="identifier" 
+            required
+            autocomplete="username"
+        >
+    </div>
+
+    <div>
+        <label for="password">Password:</label>
+        <input 
+            type="password" 
+            id="password" 
+            name="password" 
+            required
+            autocomplete="current-password"
+        >
+    </div>
+
+    <button type="submit">Login</button>
+</form>
+
+<div class="nav">
+    <p>Don't have an account? <a href="/register">Register here</a></p>
+</div>
+
+<script>
+// Client-side validation
+document.querySelector('form').addEventListener('submit', function(e) {
+    const identifier = document.getElementById('identifier').value.trim();
+    const password = document.getElementById('password').value;
+
+    if (!identifier) {
+        e.preventDefault();
+        alert('Please enter your username or email');
+        return;
+    }
+
+    if (!password) {
+        e.preventDefault();
+        alert('Please enter your password');
+        return;
+    }
+});
+</script> 

@@ -1,0 +1,30 @@
+<%- include('layout', { title: 'Error' }) %>
+
+<h1>Error</h1>
+
+<div class="error-message">
+    <p><%= message %></p>
+    <% if (error && Object.keys(error).length > 0) { %>
+        <pre><%= JSON.stringify(error, null, 2) %></pre>
+    <% } %>
+</div>
+
+<div class="nav">
+    <a href="/">Go to Home</a>
+</div>
+
+<style>
+.error-message {
+    background-color: #fff3f3;
+    padding: 15px;
+    border-radius: 4px;
+    border: 1px solid #ffcdd2;
+    margin: 20px 0;
+}
+pre {
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-radius: 4px;
+    overflow-x: auto;
+}
+</style> 

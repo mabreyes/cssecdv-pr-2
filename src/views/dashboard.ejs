@@ -1,0 +1,23 @@
+<%- include('layout', { title: 'Dashboard' }) %>
+
+<h1>Welcome, <%= user.username %>!</h1>
+
+<div class="user-info">
+    <p>Email: <%= user.email %></p>
+    <% if (user.lastLogin) { %>
+        <p>Last login: <%= new Date(user.lastLogin).toLocaleString() %></p>
+    <% } %>
+</div>
+
+<div class="nav">
+    <a href="/logout">Logout</a>
+</div>
+
+<style>
+.user-info {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+    margin: 20px 0;
+}
+</style> 
