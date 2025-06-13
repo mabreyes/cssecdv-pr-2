@@ -1,245 +1,95 @@
 # Secure Authentication System - CSSECDV Practical Exercise 2
 
-A comprehensive secure authentication system demonstrating advanced security principles using React + Vite frontend and Node.js + Express backend.
+A comprehensive secure authentication system built with React, Node.js, and PostgreSQL, demonstrating advanced security principles and best practices.
 
-## 🔐 Security Features Implemented
+## 🔐 Key Security Features
 
-### A. User Registration System (55 points)
+- **Advanced User Registration**: Username/email validation, normalization, and blacklisting
+- **Secure Password Management**: bcrypt hashing (cost factor 12), strength validation, common password blacklist
+- **Dual Authentication**: Login with username or email
+- **Attack Protection**: Rate limiting, timing attack prevention, SQL injection/XSS protection
+- **JWT Authentication**: Secure session management with proper token handling
 
-#### A1. Username Validation and Management (20 points)
-- ✅ 3-30 character length enforcement
-- ✅ Alphanumeric characters, underscores, and hyphens only
-- ✅ Case-insensitive uniqueness checking
-- ✅ Username blacklist (100+ reserved terms)
-- ✅ No consecutive special characters
-- ✅ No leading/trailing special characters
-- ✅ Display name preservation with normalized storage
+## 🚀 Quick Start
 
-#### A2. Email Validation and Normalization (20 points)
-- ✅ RFC 5321 compliance validation
-- ✅ Local part validation (1-64 characters)
-- ✅ Domain format validation
-- ✅ 320 character maximum length
-- ✅ Case normalization (lowercase storage)
-- ✅ Comprehensive error messages
-- ✅ Consecutive dots prevention
-
-#### A3. Email Uniqueness Enforcement (10 points)
-- ✅ Database-level unique constraints
-- ✅ Case-insensitive uniqueness checking
-- ✅ Proper error messaging
-- ✅ Timing attack protection
-
-#### A4. Input Sanitization and Security (5 points)
-- ✅ XSS prevention
-- ✅ SQL injection protection
-- ✅ Input length validation
-- ✅ Dangerous character filtering
-
-### B. Password Security Implementation (45 points)
-
-#### B1. Secure Password Hashing (25 points)
-- ✅ bcrypt implementation with cost factor 12
-- ✅ Unique salt per password
-- ✅ Proper hash verification
-- ✅ Consistent timing for security
-- ✅ No plaintext password storage
-
-#### B2. Password Strength Validation (15 points)
-- ✅ 8-128 character length requirement
-- ✅ 100+ common password blacklist
-- ✅ Username/email similarity checking
-- ✅ Sequential pattern detection
-- ✅ Comprehensive validation rules
-
-#### B3. Secure Database Storage (5 points)
-- ✅ Hash-only storage (no plaintext)
-- ✅ Secure schema design
-- ✅ Proper field constraints
-- ✅ No sensitive data in logs
-
-### C. Bonus Features (20 points)
-
-#### C1. Dual Login Support (10 points)
-- ✅ Username or email authentication
-- ✅ Automatic input type detection
-- ✅ Case-insensitive matching
-- ✅ Consistent security across both methods
-
-#### C2. Generic Error Messages & Timing Protection (10 points)
-- ✅ Identical error responses for all failures
-- ✅ Consistent response timing
-- ✅ User enumeration prevention
-- ✅ Brute force protection
-
-## 🛡️ Additional Security Measures
-
-- **Rate Limiting**: Protection against brute force attacks
-- **CORS Configuration**: Secure cross-origin resource sharing
-- **Helmet.js**: Security headers implementation
-- **JWT Authentication**: Secure session management
-- **Input Sanitization**: Multi-layer protection
-- **HTTPS Ready**: Secure transmission support
-
-## 🚀 Technology Stack
-
-### Frontend
-- **React 18** - Modern UI framework
-- **Vite** - Fast build tool and dev server
-- **React Router** - Client-side routing
-- **Axios** - HTTP client with interceptors
-- **CSS3** - Modern responsive styling
-
-### Backend
-- **Node.js** - Runtime environment
-- **Express.js** - Web application framework
-- **bcrypt** - Password hashing
-- **jsonwebtoken** - JWT token management
-- **express-validator** - Input validation
-- **express-rate-limit** - Rate limiting
-- **helmet** - Security headers
-- **morgan** - Request logging
-- **cors** - Cross-origin resource sharing
-
-### Database
-- **SQLite** - Lightweight SQL database
-- **sqlite3** - Node.js SQLite driver
-
-## 📦 Installation & Setup
-
-### Prerequisites
-- Node.js 16+ installed
-- npm or yarn package manager
-
-### 1. Clone and Install Dependencies
-
+### Option 1: Docker (Recommended)
 ```bash
-# Install frontend dependencies
-npm install
+# Start all services with Docker
+docker-compose up --build
 
-# Install backend dependencies
-cd backend
-npm install
-cd ..
+# Access the application
+# Frontend: http://localhost:3000
+# Backend: http://localhost:5001 (changed from 5000)
+# pgAdmin: http://localhost:8080
 ```
 
-### 2. Start the Backend Server
-
+### Option 2: Manual Setup
 ```bash
-cd backend
+# Install dependencies
+npm install
+cd backend && npm install && cd ..
+
+# Start backend (in one terminal)
+cd backend && npm run dev
+
+# Start frontend (in another terminal)
 npm run dev
 ```
 
-The backend server will start on `http://localhost:5000`
+## 🛠️ Technology Stack
 
-### 3. Start the Frontend Development Server
-
-```bash
-# In a new terminal, from the root directory
-npm run dev
-```
-
-The frontend will start on `http://localhost:5173`
+**Frontend**: React 18, Vite, React Router, Axios, CSS3  
+**Backend**: Node.js, Express, bcrypt, JWT, express-validator, helmet  
+**Database**: PostgreSQL (Docker) / SQLite (manual setup)  
+**Security**: Rate limiting, CORS, input sanitization, security headers
 
 ## 🌐 API Endpoints
 
-### Authentication Routes
-- `POST /auth/register` - User registration
-- `POST /auth/login` - User authentication
-- `POST /auth/logout` - Session termination
-- `GET /auth/me` - Get current user info
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/auth/register` | User registration |
+| POST | `/auth/login` | User authentication |
+| POST | `/auth/logout` | Session termination |
+| GET | `/auth/me` | Current user info |
+| GET | `/dashboard` | Protected content |
 
-### Protected Routes
-- `GET /dashboard` - Protected dashboard content
+## 🧪 Security Validation
 
-### Utility Routes
-- `GET /health` - Server health check
-
-## 🧪 Security Test Cases
-
-The system implements all test cases specified in the practical exercise:
-
-### Username Validation Tests
-- A1-1: Valid username acceptance
-- A1-2: Mixed case normalization
-- A1-3: Too short rejection
-- A1-4: Too long rejection
-- A1-5: Invalid characters rejection
-- A1-6: Special character start/end rejection
-- A1-7: Reserved username rejection
-- A1-8: Case-insensitive duplicate rejection
-
-### Email Validation Tests
-- A2-1: Standard email acceptance
-- A2-2: Subdomain support
-- A2-3: Case normalization
-- A2-4: Missing @ rejection
-- A2-5: Consecutive dots rejection
-- A2-6: Length limit enforcement
-- A2-7: Empty field rejection
-- A2-8: Missing domain rejection
-
-### Security Tests
-- A4-1: SQL injection prevention
-- A4-2: XSS prevention
-- A4-3: Input length validation
-- B1-1 through B1-5: Password hashing tests
-- B2-1 through B2-7: Password strength tests
-- C1-1 through C1-5: Dual login tests
-- C2-1 through C2-6: Timing protection tests
+The system implements comprehensive security measures tested against:
+- Username validation (length, characters, uniqueness, blacklist)
+- Email validation (RFC compliance, normalization, uniqueness)
+- Password security (hashing, strength requirements, pattern detection)
+- Input sanitization (SQL injection, XSS prevention)
+- Authentication timing protection and generic error messages
 
 ## 📱 User Interface
 
-### Registration Page (`/register`)
-- Comprehensive form validation
-- Real-time error feedback
-- Password visibility toggle
-- Security hints and guidelines
+- **Registration**: Real-time validation, password strength indicators
+- **Login**: Dual authentication support (username/email)
+- **Dashboard**: Protected user area with security status
 
-### Login Page (`/login`)
-- Dual authentication (username/email)
-- Generic error messages
-- Security notices
-- Responsive design
-
-### Dashboard (`/dashboard`)
-- Protected content area
-- User profile information
-- Security status indicators
-- Activity logging
-- Logout functionality
-
-## 🔒 Security Considerations
-
-1. **Password Security**: bcrypt with cost factor 12, unique salts
-2. **Session Management**: JWT with secure storage
-3. **Input Validation**: Server-side validation with sanitization
-4. **Error Handling**: Generic messages to prevent enumeration
-5. **Rate Limiting**: Brute force protection
-6. **CORS**: Configured for specific origins
-7. **Headers**: Security headers via Helmet.js
-8. **Logging**: No sensitive data in logs
-
-## 🎯 Production Deployment
+## 🔒 Production Notes
 
 For production deployment:
+1. Set secure JWT_SECRET environment variable
+2. Enable HTTPS
+3. Configure proper CORS origins
+4. Set up database encryption and backups
+5. Implement monitoring and alerting
 
-1. Set environment variables:
-   ```bash
-   NODE_ENV=production
-   JWT_SECRET=your-super-secure-secret
-   FRONTEND_URL=https://yourdomain.com
-   ```
+## 📋 Docker Services
 
-2. Use HTTPS for all communications
-3. Implement additional monitoring and alerting
-4. Consider database encryption at rest
-5. Set up proper backup strategies
+| Service | Port | Description |
+|---------|------|-------------|
+| Frontend | 3000 | React application |
+| Backend | 5001 | Node.js API server |
+| PostgreSQL | 5432 | Database server |
+| pgAdmin | 8080 | Database management |
 
-## 📄 License
-
-This project is for educational purposes as part of DLSU CSSECDV coursework.
+**Default Credentials**:
+- Database: `postgres` / `postgres123`
+- pgAdmin: `admin@example.com` / `admin123`
 
 ---
 
-**Note**: This implementation demonstrates comprehensive security principles and should be adapted with additional security measures for production use.
+**Educational Project**: Part of DLSU CSSECDV coursework demonstrating secure authentication implementation.
