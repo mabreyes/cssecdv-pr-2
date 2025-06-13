@@ -22,6 +22,7 @@ const {
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const HOST = process.env.HOST || '0.0.0.0'; // Allow external connections
 
 // Security middleware
 app.use(helmet({
@@ -35,15 +36,38 @@ app.use(helmet({
   },
 }));
 
-// CORS configuration
+// CORS configuration - Allow multiple origins for development and production
+const allowedOrigins = [
+  process.env.FRONTEND_URL || 'http://localhost:3000',
+  'http://localhost:5173', // Vite dev server
+  'http://localhost:5174', // Alternative Vite port
+  'http://localhost:3000', // Docker frontend
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:3000',
+  'http://0.0.0.0:5173',
+  'http://0.0.0.0:3000'
+];
+
 app.use(cors({
-  origin: [
-    process.env.FRONTEND_URL || 'http://localhost:5173',
-    'http://localhost:5174' // Allow both ports in case 5173 is busy
-  ],
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      console.log('CORS blocked origin:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
-  optionsSuccessStatus: 200
+  optionsSuccessStatus: 200,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
+
+// Handle preflight requests
+app.options('*', cors());
 
 // Request logging
 app.use(morgan('combined', {
@@ -91,7 +115,9 @@ app.get('/health', (req, res) => {
   res.status(200).json({
     success: true,
     message: 'Server is healthy',
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    port: PORT,
+    host: HOST
   });
 });
 
@@ -178,16 +204,16 @@ const startServer = async () => {
     await initDatabase();
     console.log('Database initialized successfully');
     
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running on port ${PORT}`);
-      console.log(`📊 Health check: http://localhost:${PORT}/health`);
+    app.listen(PORT, HOST, () => {
+      console.log(`🚀 Server running on http://${HOST}:${PORT}`);
+      console.log(`📊 Health check: http://${HOST}:${PORT}/health`);
       console.log(`🔐 Auth endpoints:`);
-      console.log(`   - POST /auth/register`);
-      console.log(`   - POST /auth/login`);
-      console.log(`   - POST /auth/logout`);
-      console.log(`   - GET /auth/me`);
-      console.log(`🏠 Dashboard: GET /dashboard (protected)`);
-      console.log(`🌍 CORS enabled for: ${process.env.FRONTEND_URL || 'http://localhost:5173'}`);
+      console.log(`   - POST http://${HOST}:${PORT}/auth/register`);
+      console.log(`   - POST http://${HOST}:${PORT}/auth/login`);
+      console.log(`   - POST http://${HOST}:${PORT}/auth/logout`);
+      console.log(`   - GET http://${HOST}:${PORT}/auth/me`);
+      console.log(`🏠 Dashboard: GET http://${HOST}:${PORT}/dashboard (protected)`);
+      console.log(`🌍 CORS enabled for origins:`, allowedOrigins);
     });
   } catch (error) {
     console.error('Failed to start server:', error);
@@ -202,8 +228,19 @@ process.on('SIGINT', () => {
 });
 
 process.on('SIGTERM', () => {
-  console.log('\n🛑 Shutting down server gracefully...');
+  console.log('\n🛑 Received SIGTERM, shutting down gracefully...');
   process.exit(0);
+});
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  process.exit(1);
 });
 
 startServer();
