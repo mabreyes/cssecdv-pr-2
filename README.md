@@ -236,17 +236,6 @@ For production deployment:
 4. Consider database encryption at rest
 5. Set up proper backup strategies
 
-## 📝 AI Assistance Disclosure
-
-This project was developed with assistance from Claude Sonnet 4 AI for:
-- Architecture and security best practices guidance
-- Code structure and implementation patterns
-- Comprehensive validation logic implementation
-- Security testing methodology
-- Documentation and explanation of security principles
-
-All security implementations follow industry standards and the specific requirements outlined in the CSSECDV Practical Exercise 2 specification.
-
 ## 📄 License
 
 This project is for educational purposes as part of DLSU CSSECDV coursework.
