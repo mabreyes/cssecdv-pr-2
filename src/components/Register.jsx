@@ -7,39 +7,41 @@ import './Auth.css';
 const Register = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
-  
+
   const [formData, setFormData] = useState({
     username: '',
     email: '',
-    password: ''
+    password: '',
   });
-  
+
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   // Client-side validation functions
-  const validateUsername = (username) => {
+  const validateUsername = username => {
     const errors = [];
-    
+
     if (!username) {
       errors.push('Username is required');
     } else if (username.length < 3 || username.length > 30) {
       errors.push('Username must be 3-30 characters long');
     } else if (!/^[a-zA-Z0-9_-]+$/.test(username)) {
-      errors.push('Username can only contain letters, numbers, hyphens, and underscores');
+      errors.push(
+        'Username can only contain letters, numbers, hyphens, and underscores'
+      );
     } else if (/^[_-]|[_-]$/.test(username)) {
       errors.push('Username cannot start or end with special characters');
     } else if (/[_-]{2,}/.test(username)) {
       errors.push('Username cannot contain consecutive special characters');
     }
-    
+
     return errors;
   };
 
-  const validateEmail = (email) => {
+  const validateEmail = email => {
     const errors = [];
-    
+
     if (!email) {
       errors.push('Email address is required');
     } else if (email.length > 320) {
@@ -52,20 +54,25 @@ const Register = () => {
         errors.push('Please enter a valid email address');
       } else {
         const [localPart, domainPart] = email.split('@');
-        if (localPart.startsWith('.') || localPart.endsWith('.') || 
-            localPart.length > 64 || !domainPart || 
-            domainPart.startsWith('.') || domainPart.endsWith('.')) {
+        if (
+          localPart.startsWith('.') ||
+          localPart.endsWith('.') ||
+          localPart.length > 64 ||
+          !domainPart ||
+          domainPart.startsWith('.') ||
+          domainPart.endsWith('.')
+        ) {
           errors.push('Please enter a valid email address');
         }
       }
     }
-    
+
     return errors;
   };
 
-  const validatePassword = (password) => {
+  const validatePassword = password => {
     const errors = [];
-    
+
     if (!password) {
       errors.push('Password is required');
     } else if (password.length < 8) {
@@ -73,62 +80,73 @@ const Register = () => {
     } else if (password.length > 128) {
       errors.push('Password must not exceed 128 characters');
     }
-    
+
     // Check for common passwords (basic client-side check)
-    const commonPasswords = ['password', '123456', '123456789', 'qwerty', 'abc123'];
+    const commonPasswords = [
+      'password',
+      '123456',
+      '123456789',
+      'qwerty',
+      'abc123',
+    ];
     if (commonPasswords.includes(password.toLowerCase())) {
       errors.push('This password is too common');
     }
-    
+
     // Check against username and email
-    if (formData.username && password.toLowerCase() === formData.username.toLowerCase()) {
+    if (
+      formData.username &&
+      password.toLowerCase() === formData.username.toLowerCase()
+    ) {
       errors.push('Password cannot be the same as your username');
     }
-    
+
     if (formData.email) {
       const emailLocal = formData.email.split('@')[0].toLowerCase();
       if (password.toLowerCase() === emailLocal) {
         errors.push('Password cannot be the same as your email');
       }
     }
-    
+
     return errors;
   };
 
-  const handleInputChange = (e) => {
+  const handleInputChange = e => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
-    
+
     // Clear errors for this field when user starts typing
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
-        [name]: []
+        [name]: [],
       }));
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     // Client-side validation
     const usernameErrors = validateUsername(formData.username);
     const emailErrors = validateEmail(formData.email);
     const passwordErrors = validatePassword(formData.password);
-    
+
     const newErrors = {
       username: usernameErrors,
       email: emailErrors,
-      password: passwordErrors
+      password: passwordErrors,
     };
-    
+
     // Check if there are any validation errors
-    const hasErrors = Object.values(newErrors).some(errArray => errArray.length > 0);
-    
+    const hasErrors = Object.values(newErrors).some(
+      errArray => errArray.length > 0
+    );
+
     if (hasErrors) {
       setErrors(newErrors);
       setIsLoading(false);
@@ -137,7 +155,7 @@ const Register = () => {
 
     try {
       const response = await axios.post('/auth/register', formData);
-      
+
       if (response.data.success) {
         const { user, token } = response.data.data;
         login(user, token);
@@ -145,7 +163,7 @@ const Register = () => {
       }
     } catch (error) {
       console.error('Registration error:', error);
-      
+
       if (error.response?.data?.errors) {
         // Handle server validation errors
         const serverErrors = {};
@@ -158,7 +176,10 @@ const Register = () => {
         setErrors(serverErrors);
       } else {
         setErrors({
-          general: [error.response?.data?.message || 'Registration failed. Please try again.']
+          general: [
+            error.response?.data?.message ||
+              'Registration failed. Please try again.',
+          ],
         });
       }
     } finally {
@@ -166,7 +187,7 @@ const Register = () => {
     }
   };
 
-  const getFieldError = (field) => {
+  const getFieldError = field => {
     return errors[field]?.length > 0 ? errors[field][0] : '';
   };
 
@@ -180,9 +201,7 @@ const Register = () => {
 
         <form onSubmit={handleSubmit} className="auth-form">
           {errors.general && (
-            <div className="error-banner">
-              {errors.general[0]}
-            </div>
+            <div className="error-banner">{errors.general[0]}</div>
           )}
 
           <div className="form-group">
@@ -255,11 +274,7 @@ const Register = () => {
             </small>
           </div>
 
-          <button 
-            type="submit" 
-            className="auth-button"
-            disabled={isLoading}
-          >
+          <button type="submit" className="auth-button" disabled={isLoading}>
             {isLoading ? 'Creating Account...' : 'Create Account'}
           </button>
         </form>
@@ -277,4 +292,4 @@ const Register = () => {
   );
 };
 
-export default Register; 
+export default Register;

@@ -31,11 +31,13 @@ docker-compose up --build -d
 ### 3. Default Credentials
 
 **PostgreSQL Database:**
+
 - Database: `auth_db`
 - Username: `postgres`
 - Password: `postgres123`
 
 **pgAdmin Web Interface:**
+
 - Email: `admin@example.com`
 - Password: `admin123`
 
@@ -58,22 +60,26 @@ docker-compose up --build -d
 ## 🔧 Docker Services
 
 ### Frontend Service
+
 - **Image**: Custom build from React + Vite
 - **Web Server**: Nginx Alpine
 - **Port**: 3000 → 80
 - **Features**: Production optimized, gzipped assets
 
 ### Backend Service
+
 - **Image**: Custom build from Node.js 18 Alpine
 - **Port**: 5000
 - **Features**: Non-root user, health checks, PostgreSQL integration
 
 ### Database Service
+
 - **Image**: PostgreSQL 15 Alpine
 - **Port**: 5432
 - **Features**: Persistent volumes, health checks, initialization scripts
 
 ### pgAdmin Service (Optional)
+
 - **Image**: pgAdmin 4 latest
 - **Port**: 8080
 - **Features**: Web-based database management
@@ -81,6 +87,7 @@ docker-compose up --build -d
 ## 🛠️ Development Commands
 
 ### Start Services
+
 ```bash
 # Start all services
 docker-compose up
@@ -95,6 +102,7 @@ docker-compose up -d
 ```
 
 ### Stop Services
+
 ```bash
 # Stop all services
 docker-compose down
@@ -107,6 +115,7 @@ docker-compose down --rmi all -v
 ```
 
 ### View Logs
+
 ```bash
 # View all logs
 docker-compose logs
@@ -121,6 +130,7 @@ docker-compose logs -f backend
 ```
 
 ### Rebuild Services
+
 ```bash
 # Rebuild all services
 docker-compose build
@@ -138,6 +148,7 @@ docker-compose build --no-cache
 All services include health checks:
 
 ### Check Service Status
+
 ```bash
 # View service health
 docker-compose ps
@@ -149,6 +160,7 @@ docker inspect auth_postgres --format='{{.State.Health.Status}}'
 ```
 
 ### Manual Health Check URLs
+
 - Frontend: http://localhost:3000/health
 - Backend: http://localhost:5000/health
 - Database: `pg_isready -h localhost -p 5432 -U postgres`
@@ -156,6 +168,7 @@ docker inspect auth_postgres --format='{{.State.Health.Status}}'
 ## 🗄️ Database Management
 
 ### Connect to PostgreSQL
+
 ```bash
 # Using docker exec
 docker exec -it auth_postgres psql -U postgres -d auth_db
@@ -165,6 +178,7 @@ psql -h localhost -p 5432 -U postgres -d auth_db
 ```
 
 ### Database Operations
+
 ```sql
 -- View all tables
 \dt
@@ -180,6 +194,7 @@ SELECT pg_size_pretty(pg_database_size('auth_db'));
 ```
 
 ### Backup and Restore
+
 ```bash
 # Create backup
 docker exec auth_postgres pg_dump -U postgres auth_db > backup.sql
@@ -218,6 +233,7 @@ PGADMIN_DEFAULT_PASSWORD=your-secure-password
 ```
 
 ### Load Environment File
+
 ```bash
 # Use environment file
 docker-compose --env-file .env up
@@ -226,6 +242,7 @@ docker-compose --env-file .env up
 ## 📊 Monitoring and Debugging
 
 ### Container Resource Usage
+
 ```bash
 # View resource usage
 docker stats
@@ -235,6 +252,7 @@ docker stats auth_backend auth_frontend auth_postgres
 ```
 
 ### Debug Container Issues
+
 ```bash
 # Execute shell in running container
 docker exec -it auth_backend sh
@@ -247,6 +265,7 @@ docker logs auth_backend --tail 50
 ```
 
 ### Network Debugging
+
 ```bash
 # List networks
 docker network ls
@@ -262,6 +281,7 @@ docker exec auth_frontend ping backend
 ## 🚀 Production Deployment
 
 ### 1. Security Hardening
+
 ```bash
 # Use production environment
 export NODE_ENV=production
@@ -273,14 +293,18 @@ export PGADMIN_DEFAULT_PASSWORD=$(openssl rand -base64 16)
 ```
 
 ### 2. Reverse Proxy Setup
+
 Use nginx or Traefik for:
+
 - SSL termination
 - Load balancing
 - Rate limiting
 - Static asset serving
 
 ### 3. Resource Limits
+
 Update `docker-compose.yml`:
+
 ```yaml
 services:
   backend:
@@ -294,7 +318,9 @@ services:
 ```
 
 ### 4. Data Persistence
+
 Ensure volumes are backed up:
+
 ```bash
 # Backup volume
 docker run --rm -v auth_postgres_data:/data -v $(pwd):/backup ubuntu tar czf /backup/postgres_backup.tar.gz /data
@@ -303,6 +329,7 @@ docker run --rm -v auth_postgres_data:/data -v $(pwd):/backup ubuntu tar czf /ba
 ## 🧪 Testing with Docker
 
 ### Run Tests in Container
+
 ```bash
 # Backend tests
 docker-compose exec backend npm test
@@ -312,6 +339,7 @@ docker-compose exec frontend npm test
 ```
 
 ### Integration Testing
+
 ```bash
 # Test API endpoints
 curl http://localhost:5000/health
@@ -326,6 +354,7 @@ docker-compose exec postgres pg_isready -U postgres
 ### Common Issues
 
 **Port Already in Use:**
+
 ```bash
 # Find process using port
 lsof -i :3000
@@ -336,6 +365,7 @@ lsof -i :5432
 ```
 
 **Database Connection Failed:**
+
 ```bash
 # Check database logs
 docker-compose logs postgres
@@ -345,6 +375,7 @@ docker-compose exec postgres pg_isready -U postgres
 ```
 
 **Frontend Build Failed:**
+
 ```bash
 # Clear npm cache
 docker-compose build --no-cache frontend
@@ -354,6 +385,7 @@ docker-compose logs frontend
 ```
 
 **Permission Denied:**
+
 ```bash
 # Fix file permissions
 sudo chown -R $USER:$USER .
@@ -361,6 +393,7 @@ chmod -R 755 .
 ```
 
 ### Reset Everything
+
 ```bash
 # Complete reset (WARNING: This will delete all data)
 docker-compose down -v --rmi all
@@ -371,13 +404,16 @@ docker volume prune -f
 ## 📈 Performance Optimization
 
 ### 1. Multi-stage Builds
+
 Already implemented in Dockerfiles for minimal image sizes.
 
 ### 2. Layer Caching
+
 - Dependencies installed before copying source code
 - Use `.dockerignore` to exclude unnecessary files
 
 ### 3. Resource Monitoring
+
 ```bash
 # Monitor container performance
 docker stats --format "table {{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.NetIO}}"
@@ -385,4 +421,4 @@ docker stats --format "table {{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.Net
 
 ---
 
-**Note**: This Docker setup is production-ready but should be further hardened for production environments with proper secrets management, monitoring, and backup strategies. 
+**Note**: This Docker setup is production-ready but should be further hardened for production environments with proper secrets management, monitoring, and backup strategies.

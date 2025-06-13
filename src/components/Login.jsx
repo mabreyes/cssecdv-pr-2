@@ -7,41 +7,41 @@ import './Auth.css';
 const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
-  
+
   const [formData, setFormData] = useState({
     identifier: '', // Can be username or email
-    password: ''
+    password: '',
   });
-  
+
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = e => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
-    
+
     // Clear errors when user starts typing
     if (errors.general || errors[name]) {
       setErrors({});
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     setIsLoading(true);
     setErrors({});
-    
+
     // Basic client-side validation
     if (!formData.identifier) {
       setErrors({ identifier: 'Username or email is required' });
       setIsLoading(false);
       return;
     }
-    
+
     if (!formData.password) {
       setErrors({ password: 'Password is required' });
       setIsLoading(false);
@@ -50,7 +50,7 @@ const Login = () => {
 
     try {
       const response = await axios.post('/auth/login', formData);
-      
+
       if (response.data.success) {
         const { user, token } = response.data.data;
         login(user, token);
@@ -58,20 +58,20 @@ const Login = () => {
       }
     } catch (error) {
       console.error('Login error:', error);
-      
+
       // Handle all authentication errors with generic message
       // This prevents user enumeration attacks
       if (error.response?.status === 401) {
         setErrors({
-          general: 'Invalid username/email or password'
+          general: 'Invalid username/email or password',
         });
       } else if (error.response?.status === 429) {
         setErrors({
-          general: 'Too many login attempts. Please try again later.'
+          general: 'Too many login attempts. Please try again later.',
         });
       } else {
         setErrors({
-          general: 'Login failed. Please try again.'
+          general: 'Login failed. Please try again.',
         });
       }
     } finally {
@@ -92,9 +92,7 @@ const Login = () => {
 
         <form onSubmit={handleSubmit} className="auth-form">
           {errors.general && (
-            <div className="error-banner">
-              {errors.general}
-            </div>
+            <div className="error-banner">{errors.general}</div>
           )}
 
           <div className="form-group">
@@ -114,10 +112,9 @@ const Login = () => {
               <span className="error-text">{errors.identifier}</span>
             )}
             <small className="field-hint">
-              {isEmailFormat 
+              {isEmailFormat
                 ? 'Logging in with email address'
-                : 'You can use either your username or email address'
-              }
+                : 'You can use either your username or email address'}
             </small>
           </div>
 
@@ -149,11 +146,7 @@ const Login = () => {
             )}
           </div>
 
-          <button 
-            type="submit" 
-            className="auth-button"
-            disabled={isLoading}
-          >
+          <button type="submit" className="auth-button" disabled={isLoading}>
             {isLoading ? 'Signing In...' : 'Sign In'}
           </button>
         </form>
@@ -166,10 +159,11 @@ const Login = () => {
             </Link>
           </p>
         </div>
-        
+
         <div className="security-notice">
           <small>
-            Your connection is secure and encrypted. We protect your privacy and never store passwords in plain text.
+            Your connection is secure and encrypted. We protect your privacy and
+            never store passwords in plain text.
           </small>
         </div>
       </div>
@@ -177,4 +171,4 @@ const Login = () => {
   );
 };
 
-export default Login; 
+export default Login;

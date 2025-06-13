@@ -25,7 +25,7 @@ const Dashboard = () => {
     try {
       setIsLoading(true);
       setError(null);
-      
+
       const response = await axios.get('/dashboard');
       if (response.data.success) {
         setDashboardData(response.data.data);
@@ -39,7 +39,9 @@ const Dashboard = () => {
         logout();
         navigate('/login');
       } else {
-        setError(error.response?.data?.message || 'Failed to load dashboard data');
+        setError(
+          error.response?.data?.message || 'Failed to load dashboard data'
+        );
       }
     } finally {
       setIsLoading(false);
@@ -58,7 +60,7 @@ const Dashboard = () => {
     }
   };
 
-  const formatDate = (dateString) => {
+  const formatDate = dateString => {
     if (!dateString) return 'Never';
     return new Date(dateString).toLocaleString();
   };
@@ -69,7 +71,11 @@ const Dashboard = () => {
       <div className="dashboard-container">
         <div className="loading-container">
           <div className="loading-spinner"></div>
-          <p>{authLoading ? 'Verifying authentication...' : 'Loading your dashboard...'}</p>
+          <p>
+            {authLoading
+              ? 'Verifying authentication...'
+              : 'Loading your dashboard...'}
+          </p>
         </div>
       </div>
     );
@@ -187,7 +193,11 @@ const Dashboard = () => {
                 <div className="activity-icon">🔑</div>
                 <div className="activity-details">
                   <div className="activity-title">Successful Login</div>
-                  <div className="activity-time">{formatDate(dashboardData?.dashboardData?.lastLogin || user?.lastLogin)}</div>
+                  <div className="activity-time">
+                    {formatDate(
+                      dashboardData?.dashboardData?.lastLogin || user?.lastLogin
+                    )}
+                  </div>
                 </div>
               </div>
               <div className="activity-item">
@@ -207,8 +217,8 @@ const Dashboard = () => {
             </div>
             <div className="card-content">
               <p className="welcome-message">
-                {dashboardData?.dashboardData?.message || 
-                 "You have successfully accessed the protected dashboard."}
+                {dashboardData?.dashboardData?.message ||
+                  'You have successfully accessed the protected dashboard.'}
               </p>
               <div className="achievement-badges">
                 <span className="badge">🔐 Secure Login</span>
@@ -223,12 +233,17 @@ const Dashboard = () => {
       <footer className="dashboard-footer">
         <div className="footer-content">
           <p>
-            <strong>Security Notice:</strong> This is a demonstration of secure authentication principles. 
-            Your data is protected using industry-standard security practices including password hashing, 
-            JWT tokens, input validation, and protection against common web vulnerabilities.
+            <strong>Security Notice:</strong> This is a demonstration of secure
+            authentication principles. Your data is protected using
+            industry-standard security practices including password hashing, JWT
+            tokens, input validation, and protection against common web
+            vulnerabilities.
           </p>
           <div className="tech-stack">
-            <small>Tech Stack: React + Vite • Node.js + Express • SQLite • bcrypt • JWT</small>
+            <small>
+              Tech Stack: React + Vite • Node.js + Express • SQLite • bcrypt •
+              JWT
+            </small>
           </div>
         </div>
       </footer>
@@ -236,4 +251,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard; 
+export default Dashboard;

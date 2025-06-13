@@ -8,6 +8,9 @@
     "dev:expose": "vite --host 0.0.0.0 --port 5173 --open",
     "build": "vite build",
     "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "preview": "vite preview --host 0.0.0.0 --port 4173",
     "backend": "cd backend && npm run dev",
     "backend:prod": "cd backend && npm start",
@@ -21,7 +24,9 @@
     "docker:down": "docker-compose down",
     "docker:restart": "docker-compose down && docker-compose up",
     "docker:logs": "docker-compose logs -f",
-    "health:check": "curl -f http://localhost:5000/health && curl -f http://localhost:3000/health"
+    "health:check": "curl -f http://localhost:5000/health && curl -f http://localhost:3000/health",
+    "prepare": "husky install",
+    "pre-commit": "lint-staged"
   },
   "dependencies": {
     "axios": "^1.9.0",
@@ -41,6 +46,20 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^16.0.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.2.0",
+    "prettier": "^3.2.5",
     "vite": "^6.3.5"
+  },
+  "lint-staged": {
+    "src/**/*.{js,jsx}": [
+      "prettier --write"
+    ],
+    "backend/**/*.js": [
+      "prettier --write"
+    ],
+    "*.{json,css,md}": [
+      "prettier --write"
+    ]
   }
 }

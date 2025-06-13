@@ -4,12 +4,12 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const { initDatabase } = require('./database');
-const { 
-  registerUser, 
-  loginUser, 
-  authenticateToken, 
-  getCurrentUser, 
-  logoutUser 
+const {
+  registerUser,
+  loginUser,
+  authenticateToken,
+  getCurrentUser,
+  logoutUser,
 } = require('./auth');
 const {
   validateUsername,
@@ -17,7 +17,7 @@ const {
   validatePassword,
   validateLoginIdentifier,
   handleValidationErrors,
-  sanitizeInput
+  sanitizeInput,
 } = require('./validators');
 
 const app = express();
@@ -25,16 +25,18 @@ const PORT = process.env.PORT || 5000;
 const HOST = process.env.HOST || '0.0.0.0'; // Allow external connections
 
 // Security middleware
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      scriptSrc: ["'self'"],
-      imgSrc: ["'self'", "data:", "https:"],
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrc: ["'self'"],
+        imgSrc: ["'self'", 'data:', 'https:'],
+      },
     },
-  },
-}));
+  })
+);
 
 // CORS configuration - Allow multiple origins for development and production
 const allowedOrigins = [
@@ -45,37 +47,41 @@ const allowedOrigins = [
   'http://127.0.0.1:5173',
   'http://127.0.0.1:3000',
   'http://0.0.0.0:5173',
-  'http://0.0.0.0:3000'
+  'http://0.0.0.0:3000',
 ];
 
-app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      console.log('CORS blocked origin:', origin);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-  optionsSuccessStatus: 200,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-}));
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        console.log('CORS blocked origin:', origin);
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true,
+    optionsSuccessStatus: 200,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  })
+);
 
 // Handle preflight requests
 app.options('*', cors());
 
 // Request logging
-app.use(morgan('combined', {
-  // Don't log passwords or sensitive data
-  skip: (req, res) => {
-    return req.url.includes('/auth/') && req.method === 'POST';
-  }
-}));
+app.use(
+  morgan('combined', {
+    // Don't log passwords or sensitive data
+    skip: (req, res) => {
+      return req.url.includes('/auth/') && req.method === 'POST';
+    },
+  })
+);
 
 // Rate limiting
 const authLimiter = rateLimit({
@@ -83,7 +89,7 @@ const authLimiter = rateLimit({
   max: 5, // limit each IP to 5 requests per windowMs for auth endpoints
   message: {
     success: false,
-    message: 'Too many authentication attempts, please try again later'
+    message: 'Too many authentication attempts, please try again later',
   },
   standardHeaders: true,
   legacyHeaders: false,
@@ -94,7 +100,7 @@ const generalLimiter = rateLimit({
   max: 100, // limit each IP to 100 requests per windowMs
   message: {
     success: false,
-    message: 'Too many requests, please try again later'
+    message: 'Too many requests, please try again later',
   },
   standardHeaders: true,
   legacyHeaders: false,
@@ -117,12 +123,13 @@ app.get('/health', (req, res) => {
     message: 'Server is healthy',
     timestamp: new Date().toISOString(),
     port: PORT,
-    host: HOST
+    host: HOST,
   });
 });
 
 // Authentication routes
-app.post('/auth/register', 
+app.post(
+  '/auth/register',
   authLimiter,
   validateUsername(),
   validateEmail(),
@@ -134,7 +141,8 @@ app.post('/auth/register',
 // Import body from express-validator for the login route
 const { body } = require('express-validator');
 
-app.post('/auth/login',
+app.post(
+  '/auth/login',
   authLimiter,
   validateLoginIdentifier(),
   body('password').notEmpty().withMessage('Password is required'),
@@ -142,59 +150,50 @@ app.post('/auth/login',
   loginUser
 );
 
-app.post('/auth/logout',
-  authenticateToken,
-  logoutUser
-);
+app.post('/auth/logout', authenticateToken, logoutUser);
 
 // Protected routes
-app.get('/auth/me',
-  authenticateToken,
-  getCurrentUser
-);
+app.get('/auth/me', authenticateToken, getCurrentUser);
 
 // Dashboard route (protected)
-app.get('/dashboard',
-  authenticateToken,
-  (req, res) => {
-    res.status(200).json({
-      success: true,
-      message: 'Welcome to your dashboard!',
-      data: {
-        user: {
-          id: req.user.userId,
-          username: req.user.username,
-          displayName: req.user.displayName,
-          email: req.user.email
-        },
-        dashboardData: {
-          lastLogin: new Date().toISOString(),
-          message: 'You have successfully accessed the protected dashboard.'
-        }
-      }
-    });
-  }
-);
+app.get('/dashboard', authenticateToken, (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'Welcome to your dashboard!',
+    data: {
+      user: {
+        id: req.user.userId,
+        username: req.user.username,
+        displayName: req.user.displayName,
+        email: req.user.email,
+      },
+      dashboardData: {
+        lastLogin: new Date().toISOString(),
+        message: 'You have successfully accessed the protected dashboard.',
+      },
+    },
+  });
+});
 
 // 404 handler
 app.use('*', (req, res) => {
   res.status(404).json({
     success: false,
-    message: 'Route not found'
+    message: 'Route not found',
   });
 });
 
 // Global error handler
 app.use((err, req, res, next) => {
   console.error('Global error handler:', err);
-  
+
   // Don't leak error details in production
   const isDevelopment = process.env.NODE_ENV === 'development';
-  
+
   res.status(err.status || 500).json({
     success: false,
     message: isDevelopment ? err.message : 'Internal server error',
-    ...(isDevelopment && { stack: err.stack })
+    ...(isDevelopment && { stack: err.stack }),
   });
 });
 
@@ -203,7 +202,7 @@ const startServer = async () => {
   try {
     await initDatabase();
     console.log('Database initialized successfully');
-    
+
     app.listen(PORT, HOST, () => {
       console.log(`🚀 Server running on http://${HOST}:${PORT}`);
       console.log(`📊 Health check: http://${HOST}:${PORT}/health`);
@@ -212,7 +211,9 @@ const startServer = async () => {
       console.log(`   - POST http://${HOST}:${PORT}/auth/login`);
       console.log(`   - POST http://${HOST}:${PORT}/auth/logout`);
       console.log(`   - GET http://${HOST}:${PORT}/auth/me`);
-      console.log(`🏠 Dashboard: GET http://${HOST}:${PORT}/dashboard (protected)`);
+      console.log(
+        `🏠 Dashboard: GET http://${HOST}:${PORT}/dashboard (protected)`
+      );
       console.log(`🌍 CORS enabled for origins:`, allowedOrigins);
     });
   } catch (error) {
@@ -233,7 +234,7 @@ process.on('SIGTERM', () => {
 });
 
 // Handle uncaught exceptions
-process.on('uncaughtException', (error) => {
+process.on('uncaughtException', error => {
   console.error('Uncaught Exception:', error);
   process.exit(1);
 });
@@ -245,4 +246,4 @@ process.on('unhandledRejection', (reason, promise) => {
 
 startServer();
 
-module.exports = app; 
+module.exports = app;

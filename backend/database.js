@@ -17,9 +17,9 @@ const pool = new Pool({
 const initDatabase = async () => {
   try {
     const client = await pool.connect();
-    
+
     console.log('Connected to PostgreSQL database');
-    
+
     // Create users table with comprehensive security schema
     const createUsersTable = `
       CREATE TABLE IF NOT EXISTS users (
@@ -76,7 +76,6 @@ const initDatabase = async () => {
 
     client.release();
     console.log('✅ Database initialized successfully');
-    
   } catch (error) {
     console.error('❌ Error initializing database:', error);
     throw error;
@@ -89,7 +88,11 @@ const query = async (text, params) => {
   try {
     const res = await pool.query(text, params);
     const duration = Date.now() - start;
-    console.log('Executed query', { text: text.substring(0, 50) + '...', duration, rows: res.rowCount });
+    console.log('Executed query', {
+      text: text.substring(0, 50) + '...',
+      duration,
+      rows: res.rowCount,
+    });
     return res;
   } catch (error) {
     console.error('Database query error:', error);
@@ -113,5 +116,5 @@ module.exports = {
   query,
   getClient,
   initDatabase,
-  closePool
-}; 
+  closePool,
+};

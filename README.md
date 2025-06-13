@@ -13,6 +13,7 @@ A comprehensive secure authentication system built with React, Node.js, and Post
 ## 🚀 Quick Start
 
 ### Option 1: Docker (Recommended)
+
 ```bash
 # Start all services with Docker
 docker-compose up --build
@@ -24,6 +25,7 @@ docker-compose up --build
 ```
 
 ### Option 2: Manual Setup
+
 ```bash
 # Install dependencies
 npm install
@@ -45,17 +47,18 @@ npm run dev
 
 ## 🌐 API Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/auth/register` | User registration |
-| POST | `/auth/login` | User authentication |
-| POST | `/auth/logout` | Session termination |
-| GET | `/auth/me` | Current user info |
-| GET | `/dashboard` | Protected content |
+| Method | Endpoint         | Description         |
+| ------ | ---------------- | ------------------- |
+| POST   | `/auth/register` | User registration   |
+| POST   | `/auth/login`    | User authentication |
+| POST   | `/auth/logout`   | Session termination |
+| GET    | `/auth/me`       | Current user info   |
+| GET    | `/dashboard`     | Protected content   |
 
 ## 🧪 Security Validation
 
 The system implements comprehensive security measures tested against:
+
 - Username validation (length, characters, uniqueness, blacklist)
 - Email validation (RFC compliance, normalization, uniqueness)
 - Password security (hashing, strength requirements, pattern detection)
@@ -71,6 +74,7 @@ The system implements comprehensive security measures tested against:
 ## 🔒 Production Notes
 
 For production deployment:
+
 1. Set secure JWT_SECRET environment variable
 2. Enable HTTPS
 3. Configure proper CORS origins
@@ -79,14 +83,15 @@ For production deployment:
 
 ## 📋 Docker Services
 
-| Service | Port | Description |
-|---------|------|-------------|
-| Frontend | 3000 | React application |
-| Backend | 5001 | Node.js API server |
-| PostgreSQL | 5432 | Database server |
-| pgAdmin | 8080 | Database management |
+| Service    | Port | Description         |
+| ---------- | ---- | ------------------- |
+| Frontend   | 3000 | React application   |
+| Backend    | 5001 | Node.js API server  |
+| PostgreSQL | 5432 | Database server     |
+| pgAdmin    | 8080 | Database management |
 
 **Default Credentials**:
+
 - Database: `postgres` / `postgres123`
 - pgAdmin: `admin@example.com` / `admin123`
 

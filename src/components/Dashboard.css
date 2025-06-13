@@ -125,7 +125,11 @@
 .card-header {
   padding: 28px 32px 20px;
   border-bottom: 1px solid rgba(241, 245, 249, 0.8);
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.9) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(248, 250, 252, 0.9) 100%
+  );
 }
 
 .card-header h2 {
@@ -407,15 +411,15 @@
     grid-template-columns: repeat(4, 1fr);
     gap: 40px;
   }
-  
+
   .header-content {
     padding: 32px 8vw;
   }
-  
+
   .dashboard-main {
     padding: 50px 8vw;
   }
-  
+
   .dashboard-footer {
     padding: 50px 8vw;
   }
@@ -426,15 +430,15 @@
   .header-content {
     padding: 24px 4vw;
   }
-  
+
   .dashboard-main {
     padding: 40px 4vw;
   }
-  
+
   .dashboard-footer {
     padding: 40px 4vw;
   }
-  
+
   .dashboard-grid {
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 28px;
@@ -449,42 +453,42 @@
     text-align: center;
     padding: 24px 6vw;
   }
-  
+
   .dashboard-main {
     padding: 32px 6vw;
   }
-  
+
   .dashboard-footer {
     padding: 32px 6vw;
   }
-  
+
   .dashboard-grid {
     grid-template-columns: 1fr;
     gap: 24px;
   }
-  
+
   .card-header {
     padding: 24px 28px 16px;
   }
-  
+
   .card-content {
     padding: 24px 28px 28px;
   }
-  
+
   .profile-field {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
   }
-  
+
   .profile-field label {
     min-width: auto;
   }
-  
+
   .profile-field span {
     text-align: left;
   }
-  
+
   .achievement-badges {
     justify-content: center;
   }
@@ -495,46 +499,46 @@
   .header-content {
     padding: 20px 8vw;
   }
-  
+
   .dashboard-main {
     padding: 24px 8vw;
   }
-  
+
   .dashboard-footer {
     padding: 24px 8vw;
   }
-  
+
   .dashboard-grid {
     gap: 20px;
   }
-  
+
   .card-header {
     padding: 20px 24px 12px;
   }
-  
+
   .card-content {
     padding: 20px 24px 24px;
   }
-  
+
   .logout-button {
     padding: 10px 20px;
     font-size: 13px;
   }
-  
+
   .activity-icon {
     width: 48px;
     height: 48px;
     font-size: 24px;
   }
-  
+
   .activity-title {
     font-size: 15px;
   }
-  
+
   .activity-time {
     font-size: 12px;
   }
-  
+
   .badge {
     padding: 8px 12px;
     font-size: 12px;
@@ -546,34 +550,34 @@
   .header-content {
     padding: 16px 10vw;
   }
-  
+
   .dashboard-main {
     padding: 20px 10vw;
   }
-  
+
   .dashboard-footer {
     padding: 20px 10vw;
   }
-  
+
   .card-header {
     padding: 16px 20px 10px;
   }
-  
+
   .card-content {
     padding: 16px 20px 20px;
   }
-  
+
   .security-item {
     padding: 12px;
     margin-bottom: 16px;
   }
-  
+
   .profile-field {
     padding: 12px 0;
   }
-  
+
   .profile-field label,
   .profile-field span {
     font-size: 14px;
   }
-} 
+}

@@ -1,4 +1,9 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from 'react-router-dom';
 import { useState, useEffect, createContext, useContext } from 'react';
 import axios from 'axios';
 import Register from './components/Register';
@@ -8,9 +13,10 @@ import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
 
 // Configure axios defaults
-axios.defaults.baseURL = process.env.NODE_ENV === 'production' 
-  ? '/api'  // Use /api prefix in production (Docker)
-  : 'http://localhost:5000'; // Direct connection in development
+axios.defaults.baseURL =
+  process.env.NODE_ENV === 'production'
+    ? '/api' // Use /api prefix in production (Docker)
+    : 'http://localhost:5000'; // Direct connection in development
 
 // Auth Context
 const AuthContext = createContext();
@@ -84,14 +90,10 @@ const AuthProvider = ({ children }) => {
     logout,
     isAuthenticated: !!user && !!token,
     loading,
-    initialized
+    initialized,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 function App() {
@@ -102,39 +104,41 @@ function App() {
           <div className="app-container">
             <Routes>
               {/* Public routes */}
-              <Route 
-                path="/register" 
-                element={<PublicRoute><Register /></PublicRoute>} 
+              <Route
+                path="/register"
+                element={
+                  <PublicRoute>
+                    <Register />
+                  </PublicRoute>
+                }
               />
-              <Route 
-                path="/login" 
-                element={<PublicRoute><Login /></PublicRoute>} 
+              <Route
+                path="/login"
+                element={
+                  <PublicRoute>
+                    <Login />
+                  </PublicRoute>
+                }
               />
-              
+
               {/* Protected routes */}
-              <Route 
-                path="/dashboard" 
+              <Route
+                path="/dashboard"
                 element={
                   <ProtectedRoute>
                     <Dashboard />
                   </ProtectedRoute>
-                } 
+                }
               />
-              
+
               {/* Default redirect */}
-              <Route 
-                path="/" 
-                element={<Navigate to="/dashboard" replace />} 
-              />
-              
+              <Route path="/" element={<Navigate to="/dashboard" replace />} />
+
               {/* Catch all route */}
-              <Route 
-                path="*" 
-                element={<Navigate to="/dashboard" replace />} 
-              />
+              <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Routes>
           </div>
-      </div>
+        </div>
       </AuthProvider>
     </Router>
   );
@@ -143,7 +147,7 @@ function App() {
 // Public Route Component (redirects to dashboard if authenticated)
 const PublicRoute = ({ children }) => {
   const { isAuthenticated, loading, initialized } = useAuth();
-  
+
   if (loading || !initialized) {
     return (
       <div className="loading-container">
@@ -152,7 +156,7 @@ const PublicRoute = ({ children }) => {
       </div>
     );
   }
-  
+
   return isAuthenticated ? <Navigate to="/dashboard" replace /> : children;
 };
 

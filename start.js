@@ -14,13 +14,13 @@ console.log('🚀 Starting Secure Authentication System...\n');
 const backendNodeModules = join(__dirname, 'backend', 'node_modules');
 if (!existsSync(backendNodeModules)) {
   console.log('📦 Installing backend dependencies...');
-  const install = spawn('npm', ['install'], { 
+  const install = spawn('npm', ['install'], {
     cwd: join(__dirname, 'backend'),
     stdio: 'inherit',
-    shell: true 
+    shell: true,
   });
-  
-  install.on('close', (code) => {
+
+  install.on('close', code => {
     if (code === 0) {
       console.log('✅ Backend dependencies installed successfully\n');
       startServers();
@@ -54,10 +54,14 @@ function startServers() {
   console.log('⚡ Starting servers now...\n');
 
   // Start both servers using concurrently
-  const start = spawn('npx', ['concurrently', '"npm run backend"', '"npm run dev"'], {
-    stdio: 'inherit',
-    shell: true
-  });
+  const start = spawn(
+    'npx',
+    ['concurrently', '"npm run backend"', '"npm run dev"'],
+    {
+      stdio: 'inherit',
+      shell: true,
+    }
+  );
 
   // Handle process termination
   process.on('SIGINT', () => {
@@ -66,7 +70,7 @@ function startServers() {
     process.exit(0);
   });
 
-  start.on('close', (code) => {
+  start.on('close', code => {
     console.log(`\n📊 Servers stopped with exit code ${code}`);
   });
-} 
+}

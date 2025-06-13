@@ -3,7 +3,9 @@ const jwt = require('jsonwebtoken');
 const { query } = require('./database');
 
 // JWT secret (in production, use environment variable)
-const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-this-in-production';
+const JWT_SECRET =
+  process.env.JWT_SECRET ||
+  'your-super-secret-jwt-key-change-this-in-production';
 const JWT_EXPIRES_IN = '24h';
 
 // Bcrypt cost factor (recommended: 12-14 for high security)
@@ -13,7 +15,7 @@ const BCRYPT_ROUNDS = 12;
 const TIMING_DELAY_MS = 100;
 
 // Helper function to add consistent timing delay
-const addTimingDelay = async (startTime) => {
+const addTimingDelay = async startTime => {
   const elapsed = Date.now() - startTime;
   const delay = Math.max(0, TIMING_DELAY_MS - elapsed);
   if (delay > 0) {
@@ -27,10 +29,10 @@ const GENERIC_AUTH_ERROR = 'Invalid username/email or password';
 // Register user
 const registerUser = async (req, res) => {
   const startTime = Date.now();
-  
+
   try {
     const { username, email, password } = req.body;
-    
+
     // Store original case for display, lowercase for storage/comparison
     const displayName = username;
     const normalizedUsername = username.toLowerCase();
@@ -47,7 +49,7 @@ const registerUser = async (req, res) => {
       return res.status(400).json({
         success: false,
         message: 'Registration failed',
-        errors: [{ field: 'username', message: 'Username already exists' }]
+        errors: [{ field: 'username', message: 'Username already exists' }],
       });
     }
 
@@ -62,7 +64,12 @@ const registerUser = async (req, res) => {
       return res.status(400).json({
         success: false,
         message: 'Registration failed',
-        errors: [{ field: 'email', message: 'An account with this email already exists' }]
+        errors: [
+          {
+            field: 'email',
+            message: 'An account with this email already exists',
+          },
+        ],
       });
     }
 
@@ -80,11 +87,11 @@ const registerUser = async (req, res) => {
 
     // Generate JWT token
     const token = jwt.sign(
-      { 
-        userId: userId, 
+      {
+        userId: userId,
         username: normalizedUsername,
         displayName: displayName,
-        email: normalizedEmail 
+        email: normalizedEmail,
       },
       JWT_SECRET,
       { expiresIn: JWT_EXPIRES_IN }
@@ -100,19 +107,18 @@ const registerUser = async (req, res) => {
           id: userId,
           username: normalizedUsername,
           displayName: displayName,
-          email: normalizedEmail
+          email: normalizedEmail,
         },
-        token: token
-      }
+        token: token,
+      },
     });
-
   } catch (error) {
     console.error('Registration error:', error.message);
     await addTimingDelay(startTime);
-    
+
     res.status(500).json({
       success: false,
-      message: 'Internal server error during registration'
+      message: 'Internal server error during registration',
     });
   }
 };
@@ -120,19 +126,19 @@ const registerUser = async (req, res) => {
 // Login user (supports both username and email)
 const loginUser = async (req, res) => {
   const startTime = Date.now();
-  
+
   try {
     const { identifier, password } = req.body;
-    
+
     // Determine if identifier is email or username
     const isEmail = identifier.includes('@');
     const normalizedIdentifier = identifier.toLowerCase();
 
     // Query user by email or username (case-insensitive)
-    const queryText = isEmail 
+    const queryText = isEmail
       ? 'SELECT * FROM users WHERE LOWER(email) = $1'
       : 'SELECT * FROM users WHERE LOWER(username) = $1';
-    
+
     const result = await query(queryText, [normalizedIdentifier]);
     const user = result.rows[0];
 
@@ -141,10 +147,10 @@ const loginUser = async (req, res) => {
       // Perform dummy hash operation to maintain consistent timing
       await bcrypt.hash('dummy-password', BCRYPT_ROUNDS);
       await addTimingDelay(startTime);
-      
+
       return res.status(401).json({
         success: false,
-        message: GENERIC_AUTH_ERROR
+        message: GENERIC_AUTH_ERROR,
       });
     }
 
@@ -153,10 +159,10 @@ const loginUser = async (req, res) => {
 
     if (!isPasswordValid) {
       await addTimingDelay(startTime);
-      
+
       return res.status(401).json({
         success: false,
-        message: GENERIC_AUTH_ERROR
+        message: GENERIC_AUTH_ERROR,
       });
     }
 
@@ -168,11 +174,11 @@ const loginUser = async (req, res) => {
 
     // Generate JWT token
     const token = jwt.sign(
-      { 
-        userId: user.id, 
+      {
+        userId: user.id,
         username: user.username,
         displayName: user.display_name,
-        email: user.email 
+        email: user.email,
       },
       JWT_SECRET,
       { expiresIn: JWT_EXPIRES_IN }
@@ -189,19 +195,18 @@ const loginUser = async (req, res) => {
           username: user.username,
           displayName: user.display_name,
           email: user.email,
-          lastLogin: user.last_login
+          lastLogin: user.last_login,
         },
-        token: token
-      }
+        token: token,
+      },
     });
-
   } catch (error) {
     console.error('Login error:', error.message);
     await addTimingDelay(startTime);
-    
+
     res.status(500).json({
       success: false,
-      message: 'Internal server error during login'
+      message: 'Internal server error during login',
     });
   }
 };
@@ -214,7 +219,7 @@ const authenticateToken = (req, res, next) => {
   if (!token) {
     return res.status(401).json({
       success: false,
-      message: 'Access token required'
+      message: 'Access token required',
     });
   }
 
@@ -222,10 +227,10 @@ const authenticateToken = (req, res, next) => {
     if (err) {
       return res.status(403).json({
         success: false,
-        message: 'Invalid or expired token'
+        message: 'Invalid or expired token',
       });
     }
-    
+
     req.user = user;
     next();
   });
@@ -244,7 +249,7 @@ const getCurrentUser = async (req, res) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: 'User not found'
+        message: 'User not found',
       });
     }
 
@@ -257,16 +262,15 @@ const getCurrentUser = async (req, res) => {
           displayName: user.display_name,
           email: user.email,
           createdAt: user.created_at,
-          lastLogin: user.last_login
-        }
-      }
+          lastLogin: user.last_login,
+        },
+      },
     });
-
   } catch (error) {
     console.error('Get current user error:', error.message);
     res.status(500).json({
       success: false,
-      message: 'Internal server error'
+      message: 'Internal server error',
     });
   }
 };
@@ -277,7 +281,7 @@ const logoutUser = (req, res) => {
   // For now, we'll just send a success response as logout is handled client-side
   res.status(200).json({
     success: true,
-    message: 'Logout successful'
+    message: 'Logout successful',
   });
 };
 
@@ -288,5 +292,5 @@ module.exports = {
   getCurrentUser,
   logoutUser,
   BCRYPT_ROUNDS,
-  JWT_SECRET
-}; 
+  JWT_SECRET,
+};
