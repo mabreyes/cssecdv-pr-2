@@ -125,7 +125,7 @@ function App() {
               />
             </Routes>
           </div>
-        </div>
+      </div>
       </AuthProvider>
     </Router>
   );
