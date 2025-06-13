@@ -6,20 +6,31 @@ import './Dashboard.css';
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user, logout, isAuthenticated, loading: authLoading } = useAuth();
   const [dashboardData, setDashboardData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchDashboardData();
-  }, []);
+    // Only fetch dashboard data if user is authenticated and not in auth loading state
+    if (isAuthenticated && !authLoading && user) {
+      fetchDashboardData();
+    } else if (!authLoading && !isAuthenticated) {
+      // If not authenticated and not loading, redirect to login
+      navigate('/login');
+    }
+  }, [isAuthenticated, authLoading, user, navigate]);
 
   const fetchDashboardData = async () => {
     try {
+      setIsLoading(true);
+      setError(null);
+      
       const response = await axios.get('/dashboard');
       if (response.data.success) {
         setDashboardData(response.data.data);
+      } else {
+        setError('Failed to load dashboard data');
       }
     } catch (error) {
       console.error('Dashboard fetch error:', error);
@@ -28,7 +39,7 @@ const Dashboard = () => {
         logout();
         navigate('/login');
       } else {
-        setError('Failed to load dashboard data');
+        setError(error.response?.data?.message || 'Failed to load dashboard data');
       }
     } finally {
       setIsLoading(false);
@@ -52,17 +63,19 @@ const Dashboard = () => {
     return new Date(dateString).toLocaleString();
   };
 
-  if (isLoading) {
+  // Show loading if auth is still loading or dashboard data is loading
+  if (authLoading || (isLoading && !error)) {
     return (
       <div className="dashboard-container">
         <div className="loading-container">
           <div className="loading-spinner"></div>
-          <p>Loading your dashboard...</p>
+          <p>{authLoading ? 'Verifying authentication...' : 'Loading your dashboard...'}</p>
         </div>
       </div>
     );
   }
 
+  // Show error state
   if (error) {
     return (
       <div className="dashboard-container">
@@ -75,6 +88,11 @@ const Dashboard = () => {
         </div>
       </div>
     );
+  }
+
+  // If not authenticated, this should be handled by ProtectedRoute, but just in case
+  if (!isAuthenticated || !user) {
+    return null;
   }
 
   return (
@@ -169,7 +187,7 @@ const Dashboard = () => {
                 <div className="activity-icon">🔑</div>
                 <div className="activity-details">
                   <div className="activity-title">Successful Login</div>
-                  <div className="activity-time">{formatDate(dashboardData?.dashboardData?.lastLogin)}</div>
+                  <div className="activity-time">{formatDate(dashboardData?.dashboardData?.lastLogin || user?.lastLogin)}</div>
                 </div>
               </div>
               <div className="activity-item">
@@ -190,7 +208,7 @@ const Dashboard = () => {
             <div className="card-content">
               <p className="welcome-message">
                 {dashboardData?.dashboardData?.message || 
-                 "Welcome to your secure dashboard! You have successfully logged in and can now access protected content."}
+                 "You have successfully accessed the protected dashboard."}
               </p>
               <div className="achievement-badges">
                 <span className="badge">🔐 Secure Login</span>
@@ -210,9 +228,7 @@ const Dashboard = () => {
             JWT tokens, input validation, and protection against common web vulnerabilities.
           </p>
           <div className="tech-stack">
-            <small>
-              <strong>Tech Stack:</strong> React + Vite • Node.js + Express • SQLite • bcrypt • JWT
-            </small>
+            <small>Tech Stack: React + Vite • Node.js + Express • SQLite • bcrypt • JWT</small>
           </div>
         </div>
       </footer>

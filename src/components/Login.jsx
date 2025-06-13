@@ -169,7 +169,7 @@ const Login = () => {
         
         <div className="security-notice">
           <small>
-            🔒 Your connection is secure and encrypted. We protect your privacy and never store passwords in plain text.
+            Your connection is secure and encrypted. We protect your privacy and never store passwords in plain text.
           </small>
         </div>
       </div>

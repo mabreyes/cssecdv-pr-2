@@ -28,6 +28,7 @@ const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [loading, setLoading] = useState(true);
+  const [initialized, setInitialized] = useState(false);
 
   // Set up axios interceptor for automatic token inclusion
   useEffect(() => {
@@ -44,22 +45,29 @@ const AuthProvider = ({ children }) => {
       if (token) {
         try {
           const response = await axios.get('/auth/me');
-          setUser(response.data.data.user);
+          if (response.data.success) {
+            setUser(response.data.data.user);
+          } else {
+            throw new Error('Invalid auth response');
+          }
         } catch (error) {
           console.error('Auth check failed:', error);
           logout();
         }
       }
       setLoading(false);
+      setInitialized(true);
     };
 
     checkAuth();
-  }, [token]);
+  }, []); // Remove token dependency to prevent infinite loops
 
   const login = (userData, authToken) => {
     setUser(userData);
     setToken(authToken);
     localStorage.setItem('token', authToken);
+    // Immediately set the authorization header
+    axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`;
   };
 
   const logout = () => {
@@ -75,7 +83,8 @@ const AuthProvider = ({ children }) => {
     login,
     logout,
     isAuthenticated: !!user && !!token,
-    loading
+    loading,
+    initialized
   };
 
   return (
@@ -133,9 +142,9 @@ function App() {
 
 // Public Route Component (redirects to dashboard if authenticated)
 const PublicRoute = ({ children }) => {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading, initialized } = useAuth();
   
-  if (loading) {
+  if (loading || !initialized) {
     return (
       <div className="loading-container">
         <div className="loading-spinner"></div>
